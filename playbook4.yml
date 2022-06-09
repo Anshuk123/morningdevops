@@ -1,0 +1,27 @@
+- hosts: myservers
+  tasks:
+    - name: 'Installing tmux,nmap,mysql'
+      yum:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - tmux
+        - nmap
+        - mysql
+        - httpd
+    - name: copy module
+      copy: src=/tmp/new1 dest=/tmp/new1
+    - name: uptime
+      shell: uptime
+
+    - name: Copy template file
+      template: src=current.html.j2 dest=/var/www/html/index.html
+      notify: Start Apache
+  handlers:
+    - name: Start Apache
+      systemd:
+        name: '{{ package1 }}'
+        state: restarted
+      become: true
+
+

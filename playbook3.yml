@@ -1,0 +1,39 @@
+###### playbook of handlers###
+- hosts: myservers
+  tasks:
+    - name: Installing package1
+      yum:
+        name: git
+        state: latest
+      become: true
+    - name: Installing package2
+      yum:
+        name: "{{ package1 }}"
+        state: latest
+      become: true  
+       
+    
+    - name: copy module
+      copy: 
+        src=/tmp/new1
+        dest=/tmp/new1
+    - name : check uptime of the instance
+      shell : uptime
+      register: uptime_var
+    - debug :
+        var=uptime_var 
+    - name: Copy template file 
+      template:
+         src=current.html.j2
+         dest=/var/www/html/index.html
+      become: true
+      notify: Start Apache
+          
+  handlers:
+    - name : Start Apache
+      systemd:
+        name: "{{ package1 }}"
+        state: restarted
+      become: true
+ 
+
